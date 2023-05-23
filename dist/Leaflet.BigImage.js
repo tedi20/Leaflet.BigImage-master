@@ -168,7 +168,7 @@
                   });
                 }
               }
-              let minSide = Math.min(image.width, image.height);
+              let minSide = Math.min(image.width, image.height) / 1.5;
               for (let i = 0; i < 360; i++) {
                 let croppedCanvas = document.createElement("canvas");
                 let croppedContext = croppedCanvas.getContext("2d");
@@ -180,7 +180,6 @@
 
                 croppedContext.translate(minSide / 2, minSide / 2);
                 croppedContext.rotate(i * (Math.PI / 180));
-
                 croppedContext.drawImage(
                   image,
                   -croppedWidth / 2,
@@ -188,7 +187,7 @@
                   croppedWidth,
                   croppedHeight
                 );
-                croppedContext.setTransform(1, 0, 0, 1, 0, 0); // Reset the transformation matrix
+                //croppedContext.setTransform(1, 0, 0, 1, 0, 0); // Reset the transformation matrix
 
                 croppedCanvas.toBlob(function (croppedBlob) {
                   addToZip(croppedBlob, i);
@@ -202,10 +201,10 @@
             let link = document.createElement("a");
             link.download = "bigImage.png";
             link.href = URL.createObjectURL(blob);
-            link.click();
+            // link.click();
           });
-          self._containerParams.classList.remove("print-disabled");
-          self._loader.style.display = "none";
+          //   self._containerParams.classList.remove("print-disabled");
+          //   self._loader.style.display = "none";
         });
     },
   });
