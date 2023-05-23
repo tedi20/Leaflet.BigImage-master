@@ -111,49 +111,103 @@
             };
             image.src = layer.getTileUrl(tilePoint);
         },
-        _print: function () {
+        _print: async function () {
+            console.log(1);
+          
             let self = this;
-
+          
             self.tilesImgs = {};
-    
+          
             let dimensions = self._map.getSize();
-
+          
             self.zoom = self._map.getZoom();
             self.bounds = self._map.getPixelBounds();
-
+          
             self.canvas = document.createElement('canvas');
             self.canvas.width = dimensions.x;
             self.canvas.height = dimensions.y;
             self.ctx = self.canvas.getContext('2d');
-
-            let promise = new Promise(function (resolve, reject) {
-                self._getLayers(resolve);
+          
+            await new Promise(function (resolve, reject) {
+              self._getLayers(resolve);
             });
-
-            promise.then(() => {
-                return new Promise(((resolve, reject) => {
-                    for (const [key, layer] of Object.entries(self.tilesImgs)) {
-                        for (const [key, value] of Object.entries(layer)) {
-                            self.ctx.drawImage(value.img, value.x, value.y, self.tileSize, self.tileSize);
-                        }
-                    }
-                    resolve();
-                }));
-            }).then(() => {
-                self.canvas.toBlob(function (blob) {
-                    // Hear Download
-
-                    let link = document.createElement('a');
-                    link.download = "bigImage.png";
-                    link.href = URL.createObjectURL(blob);
-                    link.click();
+          
+            await new Promise(((resolve, reject) => {
+              for (const [key, layer] of Object.entries(self.tilesImgs)) {
+                for (const [key, value] of Object.entries(layer)) {
+                  self.ctx.drawImage(value.img, value.x, value.y, self.tileSize, self.tileSize);
+                }
+              }
+              resolve();
+            }));
+          
+            const blobPromise = new Promise((resolve, reject) => {
+              self.canvas.toBlob(function (blob) {
+                resolve(blob);
+              });
+            });
+          
+            const blob = await blobPromise;
+            let image = new Image();
+            image.src = URL.createObjectURL(blob);
+          
+            image.onload = async function () {
+              const zip = new JSZip();
+          
+              // Define the rotation increment (in degrees)
+              const rotationIncrement = 1;
+              const totalRotations = 360;
+          
+              for (let rotation = 0; rotation < totalRotations; rotation += rotationIncrement) {
+                let rotatedCanvas = document.createElement('canvas');
+                let rotatedContext = rotatedCanvas.getContext('2d');
+                let rotatedWidth = image.width;
+                let rotatedHeight = image.height;
+          
+                rotatedCanvas.width = rotatedWidth;
+                rotatedCanvas.height = rotatedHeight;
+          
+                // Rotate the image by the current rotation degree
+                let rotationAngle = rotation * (Math.PI / 180);
+                rotatedContext.translate(rotatedWidth / 2, rotatedHeight / 2);
+                rotatedContext.rotate(rotationAngle);
+                rotatedContext.drawImage(image, -rotatedWidth / 2, -rotatedHeight / 2, rotatedWidth, rotatedHeight);
+          
+                const rotatedBlobPromise = new Promise((resolve, reject) => {
+                  rotatedCanvas.toBlob(function (rotatedBlob) {
+                    resolve(rotatedBlob);
+                  });
                 });
-                self._containerParams.classList.remove('print-disabled');
-                self._loader.style.display = 'none';
-            });
-        }
-    });
-
+          
+                const rotatedBlob = await rotatedBlobPromise;
+                zip.file(`rotatedImage_${rotation}.png`, rotatedBlob);
+              }
+          
+              // Generate the zip file
+              const content = await zip.generateAsync({ type: 'blob' });
+          
+              // Download the zip file
+              const downloadUrl = URL.createObjectURL(content);
+              let link = document.createElement('a');
+              link.href = downloadUrl;
+              link.download = 'rotatedImages.zip';
+              link.click();
+              URL.revokeObjectURL(downloadUrl);
+          
+              self._containerParams.classList.remove('print-disabled');
+              self._loader.style.display = 'none';
+            };
+          }
+          
+          
+          
+          
+          
+          
+          
+          
+        });      
+            
     L.control.bigImage = function (options) {
         return new L.Control.BigImage(options);
     };
