@@ -168,13 +168,12 @@
                   });
                 }
               }
-
+              let minSide = Math.min(image.width, image.height);
               for (let i = 0; i < 360; i++) {
                 let croppedCanvas = document.createElement("canvas");
                 let croppedContext = croppedCanvas.getContext("2d");
                 let croppedWidth = image.width;
                 let croppedHeight = image.height;
-                let minSide = Math.min(image.width, image.height);
 
                 croppedCanvas.width = minSide;
                 croppedCanvas.height = minSide;
@@ -182,8 +181,6 @@
                 croppedContext.translate(minSide / 2, minSide / 2);
                 croppedContext.rotate(i * (Math.PI / 180));
 
-                croppedCanvas.width = minSide / 1.5;
-                croppedCanvas.height = minSide / 1.5;
                 croppedContext.drawImage(
                   image,
                   -croppedWidth / 2,
