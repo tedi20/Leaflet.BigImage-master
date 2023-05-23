@@ -153,25 +153,6 @@
             let image = new Image();
             image.onload = function () {
               let zip = new JSZip();
-              let count = 0;
-
-              function addToZip(croppedBlob, index) {
-                zip.file("Image" + index + ".png", croppedBlob);
-                count++;
-
-                if (count === 360) {
-                  zip.generateAsync({ type: "blob" }).then(function (content) {
-                    let link = document.createElement("a");
-                    link.download = "croppedImages.zip";
-                    link.href = URL.createObjectURL(content);
-
-                    link.click();
-
-                    URL.revokeObjectURL(link.href);
-                  });
-                }
-              }
-
               for (let i = 0; i < 360; i++) {
                 let croppedCanvas = document.createElement("canvas");
                 let croppedContext = croppedCanvas.getContext("2d");
@@ -194,16 +175,26 @@
                 croppedContext.setTransform(1, 0, 0, 1, 0, 0); // Reset the transformation matrix
 
                 croppedCanvas.toBlob(function (croppedBlob) {
-                  addToZip(croppedBlob, i);
+                  zip.file("Image" + i + ".png", croppedBlob);
                 }, "image/png");
               }
+
+              zip.generateAsync({ type: "blob" }).then(function (content) {
+                let link = document.createElement("a");
+                link.download = "croppedImages.zip";
+                link.href = URL.createObjectURL(content);
+
+                link.click();
+
+                URL.revokeObjectURL(link.href);
+              });
             };
             image.src = URL.createObjectURL(blob);
 
             let link = document.createElement("a");
             link.download = "bigImage.png";
             link.href = URL.createObjectURL(blob);
-            link.click();
+            // link.click();
           });
           self._containerParams.classList.remove("print-disabled");
           self._loader.style.display = "none";
