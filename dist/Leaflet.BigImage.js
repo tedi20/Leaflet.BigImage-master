@@ -153,6 +153,22 @@
             let image = new Image();
             image.onload = function () {
               let zip = new JSZip();
+              let count = 0;
+
+              function addToZip(croppedBlob, index) {
+                zip.file("Image" + index + ".png", croppedBlob);
+                count++;
+                if (count === 360) {
+                  zip.generateAsync({ type: "blob" }).then(function (content) {
+                    let link = document.createElement("a");
+                    link.download = "croppedImages.zip";
+                    link.href = URL.createObjectURL(content);
+                    link.click();
+                    URL.revokeObjectURL(link.href);
+                  });
+                }
+              }
+
               for (let i = 0; i < 360; i++) {
                 let croppedCanvas = document.createElement("canvas");
                 let croppedContext = croppedCanvas.getContext("2d");
@@ -165,6 +181,9 @@
 
                 croppedContext.translate(minSide / 2, minSide / 2);
                 croppedContext.rotate(i * (Math.PI / 180));
+
+                croppedCanvas.width = minSide / 1.5;
+                croppedCanvas.height = minSide / 1.5;
                 croppedContext.drawImage(
                   image,
                   -croppedWidth / 2,
@@ -175,26 +194,18 @@
                 croppedContext.setTransform(1, 0, 0, 1, 0, 0); // Reset the transformation matrix
 
                 croppedCanvas.toBlob(function (croppedBlob) {
-                  zip.file("Image" + i + ".png", croppedBlob);
+                  addToZip(croppedBlob, i);
                 }, "image/png");
               }
-
-              zip.generateAsync({ type: "blob" }).then(function (content) {
-                let link = document.createElement("a");
-                link.download = "croppedImages.zip";
-                link.href = URL.createObjectURL(content);
-
-                link.click();
-
-                URL.revokeObjectURL(link.href);
-              });
+              console.log("Kopl");
             };
+            console.log("out of for");
             image.src = URL.createObjectURL(blob);
 
             let link = document.createElement("a");
             link.download = "bigImage.png";
             link.href = URL.createObjectURL(blob);
-            // link.click();
+            link.click();
           });
           self._containerParams.classList.remove("print-disabled");
           self._loader.style.display = "none";
