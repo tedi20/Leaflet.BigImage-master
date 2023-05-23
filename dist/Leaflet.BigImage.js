@@ -18,6 +18,8 @@
       this._container = document.createElement("div");
       this._container.id = "print-container";
       this._container.classList.add("leaflet-bar");
+      this._container.style.width = "100%";
+      this._container.style.display = "flex";
       this._createControlPanel(context, fn);
       return this._container;
     },
@@ -26,8 +28,10 @@
       let controlPanel = document.createElement("a");
       controlPanel.innerHTML = "Button";
       controlPanel.style.width = "100%";
-      controlPanel.style.padding = "0px 10px";
-
+      controlPanel.style.height = "50px";
+      controlPanel.style.display = "flex";
+      controlPanel.style.flexDirection = "column";
+      controlPanel.style.justifyContent = "center";
       controlPanel.id = "print-btn";
       L.DomEvent.on(controlPanel, "click", fn, context);
       this._container.appendChild(controlPanel);
