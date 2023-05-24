@@ -154,6 +154,8 @@
         })
         .then(() => {
           self.canvas.toBlob(function (blob) {
+            const start = Date.now();
+
             let image = new Image();
             image.onload = function () {
               let zip = new JSZip();
@@ -162,7 +164,9 @@
               function addToZip(croppedBlob, index) {
                 zip.file("Image" + index + ".png", croppedBlob);
                 count++;
+
                 if (count === 360) {
+                  const end1 = Date.now();
                   zip.generateAsync({ type: "blob" }).then(function (content) {
                     let link = document.createElement("a");
                     link.download = "croppedImages.zip";
@@ -173,14 +177,16 @@
                 }
               }
               let minSide = Math.min(image.width, image.height) / 1.5;
+
               for (let i = 0; i < 360; i++) {
-                let croppedCanvas = document.createElement("canvas");
+                // let croppedCanvas = document.getElementsByTagName("canvas")[0];
+                let croppedCanvas = self.canvas;
                 let croppedContext = croppedCanvas.getContext("2d");
                 let croppedWidth = image.width;
                 let croppedHeight = image.height;
 
-                croppedCanvas.width = minSide;
-                croppedCanvas.height = minSide;
+                self.canvas.width = minSide;
+                self.canvas.height = minSide;
 
                 croppedContext.translate(minSide / 2, minSide / 2);
                 croppedContext.rotate(i * (Math.PI / 180));
@@ -191,7 +197,6 @@
                   croppedWidth,
                   croppedHeight
                 );
-                //croppedContext.setTransform(1, 0, 0, 1, 0, 0); // Reset the transformation matrix
 
                 croppedCanvas.toBlob(function (croppedBlob) {
                   addToZip(croppedBlob, i);
@@ -205,6 +210,7 @@
             let link = document.createElement("a");
             link.download = "bigImage.png";
             link.href = URL.createObjectURL(blob);
+
             // link.click();
           });
           //   self._containerParams.classList.remove("print-disabled");

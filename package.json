@@ -20,5 +20,8 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "leaflet": "^1.0.0"
+  },
+  "dependencies": {
+    "uglify-js": "^3.17.4"
   }
 }
