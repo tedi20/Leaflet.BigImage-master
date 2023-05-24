@@ -102,7 +102,7 @@
       image.src = layer.getTileUrl(tilePoint);
     },
     _print: function () {
-      console.log(1);
+      $("#loader").css("display", "flex");
       let self = this;
       self.tilesImgs = {};
       let dimensions = self._map.getSize();
@@ -150,6 +150,7 @@
                     link.href = URL.createObjectURL(content);
                     link.click();
                     URL.revokeObjectURL(link.href);
+                    $("#loader").css("display", "none");
                   });
                 }
               }
