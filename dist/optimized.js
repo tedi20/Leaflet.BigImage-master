@@ -1,3 +1,13 @@
+var selectedValue;
+$(document).ready(function () {
+  $('input[type="radio"]').on("change", function () {
+      selectedValue = $(this).val();
+if (selectedValue == "option1") {
+      console.log("option1");
+}
+  });
+});
+
 (function (factory, window) {
   if (typeof define === "function" && define.amd) {
     define(["leaflet"], factory);
@@ -24,7 +34,7 @@
     },
     _createControlPanel: function (context, fn) {
       let controlPanel = document.createElement("a");
-      controlPanel.innerHTML = "Button";
+      controlPanel.innerHTML = "Отримати зображення";
       controlPanel.style.width = "100%";
       controlPanel.style.height = "50px";
       controlPanel.style.display = "flex";
@@ -101,7 +111,9 @@
       };
       image.src = layer.getTileUrl(tilePoint);
     },
+    
     _print: function () {
+      
       $("#loader").css("display", "flex");
       let self = this;
       self.tilesImgs = {};
@@ -160,8 +172,21 @@
                 let croppedContext = croppedCanvas.getContext("2d");
                 let croppedWidth = image.width;
                 let croppedHeight = image.height;
-                self.canvas.width = minSide;
-                self.canvas.height = minSide;
+                if(selectedValue == "1")
+                {
+                  self.canvas.width = minSide;
+                  self.canvas.height = minSide;
+                }
+                else if(selectedValue == "2")
+                {
+                  self.canvas.width = minSide;
+                  self.canvas.height = minSide * 3 / 4;
+                }
+                else if(selectedValue == "3")
+                {
+                  self.canvas.width = minSide;
+                  self.canvas.height = minSide * 9 / 16;
+                }
                 croppedContext.translate(minSide / 2, minSide / 2);
                 croppedContext.rotate(i * (Math.PI / 180));
                 croppedContext.drawImage(
