@@ -2,9 +2,13 @@ var selectedValue;
 $(document).ready(function () {
   $('input[type="radio"]').on("change", function () {
       selectedValue = $(this).val();
-if (selectedValue == "option1") {
-      console.log("option1");
-}
+      console.log("Selected value: " + selectedValue);
+      if(selectedValue == "1")
+      document.getElementById("crosshair").style.margin="48vh";
+      else if(selectedValue == "2")
+      document.getElementById("crosshair").style.margin="39.5vh";
+      else if(selectedValue == "3")
+      document.getElementById("crosshair").style.margin="33.125vh";
   });
 });
 
@@ -40,6 +44,7 @@ if (selectedValue == "option1") {
       controlPanel.style.display = "flex";
       controlPanel.style.flexDirection = "column";
       controlPanel.style.justifyContent = "center";
+      controlPanel.style.cursor = "default";
       controlPanel.id = "print-btn";
       L.DomEvent.on(controlPanel, "click", fn, context);
       this._container.appendChild(controlPanel);
