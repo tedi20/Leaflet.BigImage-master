@@ -1,14 +1,21 @@
 var selectedValue;
 $(document).ready(function () {
   $('input[type="radio"]').on("change", function () {
-      selectedValue = $(this).val();
-      console.log("Selected value: " + selectedValue);
-      if(selectedValue == "1")
-      document.getElementById("crosshair").style.margin="48vh";
-      else if(selectedValue == "2")
-      document.getElementById("crosshair").style.margin="39.5vh";
-      else if(selectedValue == "3")
-      document.getElementById("crosshair").style.margin="33.125vh";
+    selectedValue = $(this).val();
+    console.log("Selected value: " + selectedValue);
+    if (selectedValue == "1") {
+      document.getElementById("crosshair").style.margin = "48vh";
+      document.getElementById("square").style.margin = "16vh";
+      document.getElementById("square").src = "square.png";
+    } else if (selectedValue == "2") {
+      document.getElementById("crosshair").style.margin = "39.5vh";
+      document.getElementById("square").style.margin = "7.5vh";
+      document.getElementById("square").src = "square4x3.png";
+    } else if (selectedValue == "3") {
+      document.getElementById("crosshair").style.margin = "33.125vh";
+      document.getElementById("square").style.margin = "1.125vh";
+      document.getElementById("square").src = "square16x9.png";
+    }
   });
 });
 
@@ -116,9 +123,8 @@ $(document).ready(function () {
       };
       image.src = layer.getTileUrl(tilePoint);
     },
-    
+
     _print: function () {
-      
       $("#loader").css("display", "flex");
       let self = this;
       self.tilesImgs = {};
@@ -177,20 +183,15 @@ $(document).ready(function () {
                 let croppedContext = croppedCanvas.getContext("2d");
                 let croppedWidth = image.width;
                 let croppedHeight = image.height;
-                if(selectedValue == "1")
-                {
+                if (selectedValue == "1") {
                   self.canvas.width = minSide;
                   self.canvas.height = minSide;
-                }
-                else if(selectedValue == "2")
-                {
+                } else if (selectedValue == "2") {
                   self.canvas.width = minSide;
-                  self.canvas.height = minSide * 3 / 4;
-                }
-                else if(selectedValue == "3")
-                {
+                  self.canvas.height = (minSide * 3) / 4;
+                } else if (selectedValue == "3") {
                   self.canvas.width = minSide;
-                  self.canvas.height = minSide * 9 / 16;
+                  self.canvas.height = (minSide * 9) / 16;
                 }
                 croppedContext.translate(minSide / 2, minSide / 2);
                 croppedContext.rotate(i * (Math.PI / 180));
