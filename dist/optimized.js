@@ -1,20 +1,36 @@
-var selectedValue;
+var selectedValue = "1";
+
+document.addEventListener("DOMContentLoaded", function() {
+
+  var defaultOption = "option1";
+
+  var defaultRadioButton = document.getElementById(defaultOption);
+  if (defaultRadioButton) {
+    defaultRadioButton.checked = true;
+  }
+});
+
+
 $(document).ready(function () {
   $('input[type="radio"]').on("change", function () {
     selectedValue = $(this).val();
     console.log("Selected value: " + selectedValue);
     if (selectedValue == "1") {
-      document.getElementById("crosshair").style.margin = "48vh";
+      //document.getElementById("crosshair").style.margin = "48vh";
       document.getElementById("square").style.margin = "16vh";
+      document.getElementById("square").style.height = "68vh";
       document.getElementById("square").src = "square.png";
     } else if (selectedValue == "2") {
-      document.getElementById("crosshair").style.margin = "39.5vh";
-      document.getElementById("square").style.margin = "7.5vh";
+      //document.getElementById("crosshair").style.margin = "39.5vh";
+      document.getElementById("square").style.margin = "24.5vh";
+      document.getElementById("square").style.height = "51vh";
       document.getElementById("square").src = "square4x3.png";
     } else if (selectedValue == "3") {
-      document.getElementById("crosshair").style.margin = "33.125vh";
-      document.getElementById("square").style.margin = "1.125vh";
+      //document.getElementById("crosshair").style.margin = "33.125vh";
+      document.getElementById("square").style.margin = "28.875vh";
+      document.getElementById("square").style.height = "42.25vh";
       document.getElementById("square").src = "square16x9.png";
+      //document.getElementById("square").style.height = "vh";
     }
   });
 });
@@ -178,22 +194,26 @@ $(document).ready(function () {
                 }
               }
               let minSide = Math.min(image.width, image.height) / 1.5;
+              //let selectedValue = "1";
               for (let i = 0; i < 360; i++) {
-                let croppedCanvas = self.canvas;
+                let croppedCanvas = document.createElement("canvas");
                 let croppedContext = croppedCanvas.getContext("2d");
                 let croppedWidth = image.width;
                 let croppedHeight = image.height;
                 if (selectedValue == "1") {
-                  self.canvas.width = minSide;
-                  self.canvas.height = minSide;
+                  croppedCanvas.width = minSide;
+                  croppedCanvas.height = minSide;
                 } else if (selectedValue == "2") {
-                  self.canvas.width = minSide;
-                  self.canvas.height = (minSide * 3) / 4;
+                  croppedCanvas.width = minSide;
+                  croppedCanvas.height = (minSide * 3) / 4;
                 } else if (selectedValue == "3") {
-                  self.canvas.width = minSide;
-                  self.canvas.height = (minSide * 9) / 16;
+                  croppedCanvas.width = minSide;
+                  croppedCanvas.height = (minSide * 9) / 16;
                 }
-                croppedContext.translate(minSide / 2, minSide / 2);
+                croppedContext.translate(
+                  croppedCanvas.width / 2,
+                  croppedCanvas.height / 2
+                );
                 croppedContext.rotate(i * (Math.PI / 180));
                 croppedContext.drawImage(
                   image,
@@ -216,6 +236,7 @@ $(document).ready(function () {
           });
         });
     },
+
   });
   L.control.bigImage = function (options) {
     return new L.Control.BigImage(options);
