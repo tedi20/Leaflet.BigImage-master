@@ -34,6 +34,26 @@ $(document).ready(function () {
     }
   });
 });
+let kkkk = 0;
+function amogus()
+{
+  console.log("123");
+      var map = L.map('mapid').setUrl('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png');
+
+  if(kkkk % 2 == 0)
+  {
+    var map = L.map('mapid').setUrl('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png');
+    kkkk++;
+  }
+  else {
+  var map = L.map('mapid').setUrl("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
+   kkkk++;
+
+  }
+  L.control.bigImage({ position: "bottomright" }).addTo(map);
+      L.control.scale().addTo(map);
+ 
+}
 
 (function (factory, window) {
   if (typeof define === "function" && define.amd) {
@@ -222,6 +242,20 @@ $(document).ready(function () {
                   croppedWidth,
                   croppedHeight
                 );
+                let imageData = croppedContext.getImageData(0, 0, croppedWidth, croppedHeight);
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                  let r = imageData.data[i];
+                  let g = imageData.data[i + 1];
+                  let b = imageData.data[i + 2];
+                  let gray = (r + g + b) / 3;
+                  if (gray > 9) {
+                    imageData.data[i] = imageData.data[i + 1] = imageData.data[i + 2] = 255; // Set white
+                  } else {
+                    imageData.data[i] = imageData.data[i + 1] = imageData.data[i + 2] = 0; // Set black
+                  }
+                  
+                }
+                croppedContext.putImageData(imageData, 0, 0);
                 croppedCanvas.toBlob(function (croppedBlob) {
                   addToZip(croppedBlob, i);
                 }, "image/png");
