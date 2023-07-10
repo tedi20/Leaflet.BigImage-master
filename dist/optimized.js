@@ -1,4 +1,17 @@
 var selectedValue = "1";
+var tileLayer1 = L.tileLayer(
+  "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+  {
+    maxZoom: 18,
+    attribution: "Map data &copy; <a href='https://www.openstreetmap.org/'>OpenStreetMap</a> contributors",
+  }
+);
+
+var tileLayer2 = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+	subdomains: 'abcd',
+	maxZoom: 20
+});
 
 document.addEventListener("DOMContentLoaded", function() {
 
@@ -34,26 +47,6 @@ $(document).ready(function () {
     }
   });
 });
-let kkkk = 0;
-function amogus()
-{
-  console.log("123");
-      var map = L.map('mapid').setUrl('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png');
-
-  if(kkkk % 2 == 0)
-  {
-    var map = L.map('mapid').setUrl('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png');
-    kkkk++;
-  }
-  else {
-  var map = L.map('mapid').setUrl("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-   kkkk++;
-
-  }
-  L.control.bigImage({ position: "bottomright" }).addTo(map);
-      L.control.scale().addTo(map);
- 
-}
 
 (function (factory, window) {
   if (typeof define === "function" && define.amd) {
@@ -162,6 +155,11 @@ function amogus()
 
     _print: function () {
       $("#loader").css("display", "flex");
+        
+          console.log(1);
+          tileLayer2.addTo(mymap);
+          mymap.removeLayer(tileLayer1);
+          check = true;
       let self = this;
       self.tilesImgs = {};
       let dimensions = self._map.getSize();
@@ -242,20 +240,54 @@ function amogus()
                   croppedWidth,
                   croppedHeight
                 );
-                let imageData = croppedContext.getImageData(0, 0, croppedWidth, croppedHeight);
-                for (let i = 0; i < imageData.data.length; i += 4) {
-                  let r = imageData.data[i];
-                  let g = imageData.data[i + 1];
-                  let b = imageData.data[i + 2];
-                  let gray = (r + g + b) / 3;
-                  if (gray > 9) {
-                    imageData.data[i] = imageData.data[i + 1] = imageData.data[i + 2] = 255; // Set white
-                  } else {
-                    imageData.data[i] = imageData.data[i + 1] = imageData.data[i + 2] = 0; // Set black
+
+                let imageData = croppedContext.getImageData(
+                  0,
+                  0,
+                  croppedCanvas.width,
+                  croppedCanvas.height
+                );
+                let pixels = imageData.data;
+                for (let y = 0; y < croppedCanvas.height; y++) {
+                  for (let x = 0; x < croppedCanvas.width; x++) {
+                    if(y == croppedCanvas.height - 1)
+                    {
+                      let index1 = (y * croppedCanvas.width + x) * 4, index2 = ((y - 1) * croppedCanvas.width + x) * 4;
+                      pixels[index1] = pixels[index2];
+                      pixels[index1 + 1] = pixels[index2 + 1];
+                      pixels[index1 + 2] = pixels[index2 + 2];
+                      continue;
+                    }
+                    if(x == croppedCanvas.width - 1)
+                    {
+                      let index1 = (y * croppedCanvas.width + x) * 4, index2 = (y * croppedCanvas.width + x - 1) * 4;
+                      pixels[index1] = pixels[index2];
+                      pixels[index1 + 1] = pixels[index2 + 1];
+                      pixels[index1 + 2] = pixels[index2 + 2];
+                      continue;
+                    }
+                    let index1 = (y * croppedCanvas.width + x) * 4, index2 = ((y + 1) * croppedCanvas.width + x) * 4, index3 = (y * croppedCanvas.width + x + 1) * 4, index4 = ((y + 1) * croppedCanvas.width + x + 1) * 4;
+                    // Calculate grayscale value
+                    if(imageData.data[index1] != imageData.data[index2] || imageData.data[index1] != imageData.data[index3] || imageData.data[index1] != imageData.data[index4])
+                    {
+                      pixels[index1] = 255;
+                      pixels[index1 + 1] = 255;
+                      pixels[index1 + 2] = 255;
+                      continue;
+                    }
+                    else 
+                    {
+                      pixels[index1] = 0;
+                      pixels[index1 + 1] = 0;
+                      pixels[index1 + 2] = 0;
                   }
-                  
                 }
+              }
+                
+    
+                // Update the canvas with binary image data
                 croppedContext.putImageData(imageData, 0, 0);
+
                 croppedCanvas.toBlob(function (croppedBlob) {
                   addToZip(croppedBlob, i);
                 }, "image/png");
@@ -269,6 +301,10 @@ function amogus()
             link.href = URL.createObjectURL(blob);
           });
         });
+        console.log(2);
+        tileLayer1.addTo(mymap);
+        mymap.removeLayer(tileLayer2);
+        check = false;
     },
 
   });

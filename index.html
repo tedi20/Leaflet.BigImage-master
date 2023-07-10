@@ -19,7 +19,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js?v1.3.0"></script>
 
     <link rel="stylesheet" href="dist/Leaflet.BigImage.css" />
     <link rel="stylesheet" href="styles.css" />
@@ -66,49 +65,42 @@
           padding: 10px;
         "
       >
-        <button onclick="changeTileLayer()">Change Tile Layer</button>
-        <br />
-        
+        <label>
+          <input type="radio" name="options" value="1" id="option1" checked /> Квадрат
+        </label>
         <br />
         <label>
-          <input type=".
-          radio" name="options" value="2" id="option2" /> Круг
+          <input type="radio" name="options" value="2" /> Прямокутник 4:3
         </label>
-        </div>
-        </div><script>
-          var map = L.map("mapid").setView([51.505, -0.09], 13);
-        
-          var tileLayer1 = L.tileLayer(
-            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            {
-              maxZoom: 18,
-              attribution: "Map data &copy; <a href='https://www.openstreetmap.org/'>OpenStreetMap</a> contributors",
-            }
-          );
-        
-          var tileLayer2 = L.tileLayer(
-            "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
-            {
-              maxZoom: 18,
-              attribution: "Map data &copy; <a href='https://stamen.com'>Stamen Design</a>",
-            }
-          );
-        
-          tileLayer1.addTo(map);
-            let check = false;
-          function changeTileLayer() {
-            if (!check) {
-              console.log(1);
-              tileLayer2.addTo(map);
-              map.removeLayer(tileLayer1);
-              check = true;
-              
-            } else {
-              console.log(2);
-              tileLayer1.addTo(map);
-              map.removeLayer(tileLayer2);
-              check = false;
-            }
-          }
-        </script>
-        
+        <br />
+        <label>
+          <input type="radio" name="options" value="3" /> Прямокутник 16:9
+        </label>
+      </div>
+      <img
+      id="crosshair"
+        src="crosshair.png"
+        style="height: 4vh; margin: 48vh; z-index: 10000; position: absolute"
+      />
+	  <img
+      id="square"
+        src="square.png"
+        style="height: 68vh; margin: 16vh; z-index: 10000; position: absolute"
+      />
+    </div>
+    <div class="loader" id="loader" style="display: none"></div>
+
+    <script>
+      var mymap = L.map("mapid").setView([50.45466, 30.5238], 6);
+
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(mymap);
+
+	  
+      L.control.bigImage({ position: "bottomright" }).addTo(mymap);
+      L.control.scale().addTo(mymap);
+    </script>
+  </body>
+</html>
